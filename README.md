@@ -1,1 +1,1 @@
-# mint-ChatApp
+# mint - ChatApp
