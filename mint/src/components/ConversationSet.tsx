@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "../components-css/ConversationSet.css";
-import testIMG from "../assets/groupImage.png";
+import groupIMG from "../assets/groupImage.png";
 import ListGroup from "react-bootstrap/ListGroup";
 
 interface User {
@@ -79,7 +79,7 @@ function ConversationSet() {
                 return conversation.participants[1].profilePicture;
             }
         } else {
-            return testIMG;
+            return groupIMG;
         }
     };
 
