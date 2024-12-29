@@ -18,6 +18,7 @@ const conversationSchema = new mongoose.Schema({
         type: Map,
         of: Date,
     },
+    profilePictureSrc: { type: String },
 });
 
 const usersSchema = new mongoose.Schema(
@@ -44,7 +45,7 @@ app.use(
 app.get("/api/conversations", async (req, res) => {
     try {
         const conversations = await Conversations.find()
-            .populate("participants", "username")
+            .populate("participants", "username profilePicture")
             .populate("lastMessage.sender", "username");
 
         res.json(conversations);

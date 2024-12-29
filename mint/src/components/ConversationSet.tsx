@@ -1,19 +1,23 @@
 import { useState, useEffect } from "react";
 import "../components-css/ConversationSet.css";
-import testIMG from "../assets/testPfpImg.jpeg";
+import testIMG from "../assets/groupImage.png";
 import ListGroup from "react-bootstrap/ListGroup";
 
 interface User {
     _id: string;
     username: string;
+    profilePicture: string;
 }
 
 interface Conversation {
     _id: string;
     isGroup: boolean;
     participants: User[];
-    lastMessage?: {
-        sender: string;
+    lastMessage: {
+        sender: {
+            _id: string;
+            username: string;
+        };
         content: string;
         timestamp: string;
     };
@@ -67,6 +71,26 @@ function ConversationSet() {
         }
     };
 
+    const getProfilePhoto = (conversation: Conversation, userId: string) => {
+        if (conversation.participants.length < 3) {
+            if (conversation.participants[0]._id !== userId) {
+                return conversation.participants[0].profilePicture;
+            } else {
+                return conversation.participants[1].profilePicture;
+            }
+        } else {
+            return testIMG;
+        }
+    };
+
+    const isUser = (conversation: Conversation, userId: string) => {
+        if (conversation.lastMessage.sender._id == userId) {
+            return "You";
+        } else {
+            return conversation.lastMessage.sender.username;
+        }
+    };
+
     if (loading) return <div>Loading conversations...</div>;
     if (error) return <div>Error: {error}</div>;
 
@@ -79,7 +103,14 @@ function ConversationSet() {
                         as="li"
                         className="d-flex justify-content-between align-items-start chat"
                     >
-                        <img src={testIMG} alt="" className="pfpIMG" />
+                        <img
+                            src={getProfilePhoto(
+                                conversation,
+                                "6770843b1c2b37f5314eeb86"
+                            )}
+                            alt=""
+                            className="pfpIMG"
+                        />
                         <div className="ms-2 me-auto">
                             <div className="fw-bold">
                                 {conversation.isGroup
@@ -90,7 +121,12 @@ function ConversationSet() {
                                       )}
                             </div>
                             <div>
-                                {conversation.lastMessage?.content ||
+                                {isUser(
+                                    conversation,
+                                    "6770843b1c2b37f5314eeb86"
+                                )}
+                                :{" "}
+                                {conversation.lastMessage.content ||
                                     "No message"}
                             </div>
                         </div>
