@@ -19,6 +19,7 @@ const conversationSchema = new mongoose.Schema({
         of: Date,
     },
     profilePictureSrc: { type: String },
+    name: { type: String },
 });
 
 const usersSchema = new mongoose.Schema(
@@ -43,10 +44,17 @@ app.use(
 );
 
 app.get("/api/conversations", async (req, res) => {
+    let userId = req.headers["authorization"]?.split(" ")[1];
+
     try {
         const conversations = await Conversations.find()
             .populate("participants", "username profilePicture")
             .populate("lastMessage.sender", "username");
+
+        conversations.map(
+            (conversation) =>
+                (conversation.name = getName(conversation, userId))
+        );
 
         res.json(conversations);
     } catch (error) {
@@ -58,3 +66,15 @@ app.get("/api/conversations", async (req, res) => {
 app.listen(8081, "0.0.0.0", () => {
     console.log("Listening on port 8081...");
 });
+
+const getName = (conversation, userId) => {
+    if (conversation.participants && conversation.participants.length < 3) {
+        if (conversation.participants[0]._id == userId) {
+            return conversation.participants[1].username;
+        } else {
+            return conversation.participants[0].username;
+        }
+    } else {
+        return conversation.name;
+    }
+};

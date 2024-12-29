@@ -11,6 +11,7 @@ interface User {
 
 interface Conversation {
     _id: string;
+    name: string;
     isGroup: boolean;
     participants: User[];
     lastMessage: {
@@ -59,19 +60,8 @@ function ConversationSet() {
         fetchConversations();
     }, []);
 
-    const getUsername = (conversation: Conversation, userId: string) => {
-        if (conversation.participants && conversation.participants.length > 1) {
-            if (conversation.participants[0]._id !== userId) {
-                return conversation.participants[0].username;
-            } else {
-                return conversation.participants[1].username;
-            }
-        } else {
-            return "Unknown User";
-        }
-    };
-
     const getProfilePhoto = (conversation: Conversation, userId: string) => {
+        console.log(conversation);
         if (conversation.participants.length < 3) {
             if (conversation.participants[0]._id !== userId) {
                 return conversation.participants[0].profilePicture;
@@ -112,22 +102,13 @@ function ConversationSet() {
                             className="pfpIMG"
                         />
                         <div className="ms-2 me-auto">
-                            <div className="fw-bold">
-                                {conversation.isGroup
-                                    ? "Group Conversation"
-                                    : getUsername(
-                                          conversation,
-                                          "6770843b1c2b37f5314eeb86"
-                                      )}
-                            </div>
+                            <div className="fw-bold">{conversation.name}</div>
                             <div>
                                 {isUser(
                                     conversation,
                                     "6770843b1c2b37f5314eeb86"
                                 )}
-                                :{" "}
-                                {conversation.lastMessage.content ||
-                                    "No message"}
+                                : {conversation.lastMessage.content || ""}
                             </div>
                         </div>
                     </ListGroup.Item>
