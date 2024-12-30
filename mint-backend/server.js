@@ -120,6 +120,8 @@ io.on("connection", (socket) => {
     // console.log("A user connected"); Uncomment to see log message
 
     socket.on("message", async (messageData) => {
+        io.emit("updateLastMessage", messageData);
+
         const newMessage = new Messages({
             conversationId: messageData.conversationId,
             senderId: messageData.senderId,

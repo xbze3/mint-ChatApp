@@ -3,11 +3,25 @@ import "../components-css/ConversationSet.css";
 import groupIMG from "../assets/groupImage.png";
 import ListGroup from "react-bootstrap/ListGroup";
 import { useConversation } from "./special/ConversationContext";
+import { io } from "socket.io-client";
 
 interface User {
     _id: string;
     username: string;
     profilePicture: string;
+}
+
+interface Message {
+    _id: string;
+    conversationId: string;
+    senderId: {
+        _id: string;
+        username: string;
+        profilePicture: string;
+    };
+    content: string;
+    timestamp: string;
+    type: string;
 }
 
 interface Conversation {
@@ -63,6 +77,34 @@ function ConversationSet() {
         };
 
         fetchConversations();
+    }, []);
+
+    useEffect(() => {
+        const newSocket = io("http://localhost:8081");
+
+        newSocket.on("updateLastMessage", (data: Message) => {
+            setConversations((prevConversations) =>
+                prevConversations.map((conversation) =>
+                    conversation._id === data.conversationId
+                        ? {
+                              ...conversation,
+                              lastMessage: {
+                                  sender: {
+                                      _id: data.senderId._id,
+                                      username: data.senderId.username,
+                                  },
+                                  content: data.content,
+                                  timestamp: data.timestamp,
+                              },
+                          }
+                        : conversation
+                )
+            );
+        });
+
+        return () => {
+            newSocket.disconnect();
+        };
     }, []);
 
     const getProfilePhoto = (
