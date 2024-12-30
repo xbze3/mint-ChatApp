@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "../components-css/ConversationSet.css";
 import groupIMG from "../assets/groupImage.png";
 import ListGroup from "react-bootstrap/ListGroup";
+import { useConversation } from "./special/ConversationContext";
 
 interface User {
     _id: string;
@@ -29,6 +30,7 @@ function ConversationSet() {
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const { setConversationId } = useConversation();
 
     useEffect(() => {
         const fetchConversations = async () => {
@@ -73,11 +75,15 @@ function ConversationSet() {
     };
 
     const isUser = (conversation: Conversation, userId: string) => {
-        if (conversation.lastMessage.sender._id == userId) {
+        if (conversation.lastMessage.sender._id === userId) {
             return "You";
         } else {
             return conversation.lastMessage.sender.username;
         }
+    };
+
+    const openConversation = (conversation: Conversation) => {
+        setConversationId(conversation._id);
     };
 
     if (loading) return <div>Loading conversations...</div>;
@@ -91,6 +97,7 @@ function ConversationSet() {
                         key={conversation._id}
                         as="li"
                         className="d-flex justify-content-between align-items-start chat"
+                        onClick={() => openConversation(conversation)}
                     >
                         <img
                             src={getProfilePhoto(

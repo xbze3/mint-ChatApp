@@ -66,8 +66,9 @@
     background-color: rgb(103, 255, 103);
     display: inline-block;
     max-width: 60%;
-    margin-left: 30px;
-    margin-top: 10px;
+    margin-left: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     padding: 10px;
     border-radius: 10px;
     word-wrap: break-word;
@@ -75,12 +76,28 @@
 
 .SMessage {
     text-align: right;
-    background-color: rgb(108, 108, 108);
+    background-color: rgb(139, 139, 139);
     display: inline-block;
     max-width: 60%;
-    margin-right: 30px;
-    margin-top: 10px;
+    margin-right: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     padding: 10px;
     border-radius: 10px;
     word-wrap: break-word;
+}
+
+#ChatPFPIMG {
+    height: 35px;
+    border: 1px solid none;
+    border-radius: 50%;
+}
+
+.ChatPFPIMGDiv {
+    display: flex;
+    align-items: center;
+}
+
+.ChatPFPIMGDiv_none {
+    display: none;
 }

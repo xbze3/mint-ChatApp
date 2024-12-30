@@ -32,8 +32,20 @@ const usersSchema = new mongoose.Schema(
     { collection: "users" }
 );
 
+const messagesSchema = new mongoose.Schema(
+    {
+        conversationId: { type: String },
+        senderId: { type: mongoose.Schema.Types.ObjectId, ref: "Users" }, // Reference Users collection
+        content: { type: String },
+        timestamp: { type: Date },
+        type: { type: String },
+    },
+    { collection: "messages" }
+);
+
 const Conversations = mongoose.model("Conversation", conversationSchema);
 const Users = mongoose.model("Users", usersSchema);
+const Messages = mongoose.model("Messages", messagesSchema);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -60,6 +72,27 @@ app.get("/api/conversations", async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).send("Error fetching conversations");
+    }
+});
+
+app.get("/api/messages", async (req, res) => {
+    let conversationId = req.headers["authorization"]?.split(" ")[1];
+
+    console.log(conversationId);
+
+    if (!conversationId) {
+        return res.status(400).send("conversationId is required");
+    }
+
+    try {
+        const messages = await Messages.find({ conversationId })
+            .populate("senderId", "username profilePicture")
+            .sort({ timestamp: 1 });
+
+        res.json(messages);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error fetching messages");
     }
 });
 
