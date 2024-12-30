@@ -41,7 +41,7 @@ function ChatTextbox({
             senderId: {
                 _id: userId,
                 username: "You",
-                profilePicture: "path/to/default/profile.png",
+                profilePicture: "",
             },
             content: message,
             timestamp: new Date().toISOString(),

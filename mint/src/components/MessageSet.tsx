@@ -4,6 +4,7 @@ import MessageSection from "./MessageSection";
 import ChatTextbox from "./ChatTextbox";
 import { useConversation } from "./special/ConversationContext";
 import { io, Socket } from "socket.io-client";
+import Logo from "../assets/mintLogo.png";
 
 interface Message {
     _id: string;
@@ -79,7 +80,12 @@ function MessageSet() {
     }, [conversationId]);
 
     if (loading) return <div>Loading messages...</div>;
-    if (error) return <div>Error: {error}</div>;
+    if (error)
+        return (
+            <div id="TempLogoDiv">
+                <img src={Logo} alt="" id="TempLogo" />
+            </div>
+        );
 
     return (
         <section id="MessageSet">

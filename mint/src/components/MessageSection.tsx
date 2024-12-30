@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import "../components-css/MessageSet.css";
 
 interface Message {
@@ -20,8 +21,17 @@ interface MessageSectionProps {
 function MessageSection({ messages }: MessageSectionProps) {
     const userId = localStorage.getItem("userId");
 
+    const messageSectionRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        if (messageSectionRef.current) {
+            messageSectionRef.current.scrollTop =
+                messageSectionRef.current.scrollHeight;
+        }
+    }, [messages]);
+
     return (
-        <section id="MessageSection">
+        <section id="MessageSection" ref={messageSectionRef}>
             {messages.map((message) => (
                 <div
                     key={message._id}

@@ -5,8 +5,10 @@ const http = require("http");
 const socketIo = require("socket.io");
 const app = express();
 
-const url = "mongodb://localhost:27017/mint-db";
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect("mongodb://localhost:27017/mint-db");
+// Uncomment the code below to see db connection output
+// .then(() => console.log("Connected to MongoDB"))
+// .catch((error) => console.error("Error connecting to MongoDB:", error));
 
 const conversationSchema = new mongoose.Schema({
     isGroup: { type: Boolean, required: true },
@@ -115,7 +117,7 @@ app.get("/api/messages", async (req, res) => {
 });
 
 io.on("connection", (socket) => {
-    console.log("A user connected");
+    // console.log("A user connected"); Uncomment to see log message
 
     socket.on("message", async (messageData) => {
         const newMessage = new Messages({
@@ -143,8 +145,12 @@ io.on("connection", (socket) => {
         }
     });
 
+    socket.on("send-message", (data) => {
+        io.emit("message-received", updatedConversation);
+    });
+
     socket.on("disconnect", () => {
-        console.log("A user disconnected");
+        // console.log("A user disconnected"); Uncomment to see log message
     });
 });
 
@@ -161,5 +167,5 @@ const getName = (conversation, userId) => {
 };
 
 server.listen(8081, "0.0.0.0", () => {
-    console.log("Listening on port 8081...");
+    // console.log("Listening on port 8081..."); Uncomment to see log message
 });

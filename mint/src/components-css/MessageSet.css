@@ -102,3 +102,18 @@
 .ChatPFPIMGDiv_none {
     display: none;
 }
+
+#MessageSection::-webkit-scrollbar {
+    width: 0px;
+}
+
+#MessageSection::-webkit-scrollbar-thumb {
+    background: transparent;
+}
+
+#TempLogoDiv {
+    display: flex;
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+}
