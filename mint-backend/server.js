@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const http = require("http");
+const socketIo = require("socket.io");
 const app = express();
 
 const url = "mongodb://localhost:27017/mint-db";
@@ -8,7 +10,7 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const conversationSchema = new mongoose.Schema({
     isGroup: { type: Boolean, required: true },
-    participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
+    participants: [{ type: String, ref: "Users" }],
     lastMessage: {
         sender: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
         content: { type: String, required: true },
@@ -34,8 +36,11 @@ const usersSchema = new mongoose.Schema(
 
 const messagesSchema = new mongoose.Schema(
     {
-        conversationId: { type: String },
-        senderId: { type: mongoose.Schema.Types.ObjectId, ref: "Users" }, // Reference Users collection
+        conversationId: {
+            type: String,
+            ref: "Conversation",
+        },
+        senderId: { type: String, ref: "Users" },
         content: { type: String },
         timestamp: { type: Date },
         type: { type: String },
@@ -46,6 +51,16 @@ const messagesSchema = new mongoose.Schema(
 const Conversations = mongoose.model("Conversation", conversationSchema);
 const Users = mongoose.model("Users", usersSchema);
 const Messages = mongoose.model("Messages", messagesSchema);
+
+const server = http.createServer(app);
+const io = socketIo(server, {
+    cors: {
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST"],
+        allowedHeaders: ["Authorization", "Content-Type"],
+        credentials: true,
+    },
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -58,27 +73,30 @@ app.use(
 app.get("/api/conversations", async (req, res) => {
     let userId = req.headers["authorization"]?.split(" ")[1];
 
+    if (!userId) {
+        return res.status(400).send("User ID is required");
+    }
+
     try {
-        const conversations = await Conversations.find()
+        const conversations = await Conversations.find({
+            participants: userId,
+        })
             .populate("participants", "username profilePicture")
             .populate("lastMessage.sender", "username");
 
-        conversations.map(
-            (conversation) =>
-                (conversation.name = getName(conversation, userId))
-        );
+        conversations.forEach((conversation) => {
+            conversation.name = getName(conversation, userId);
+        });
 
         res.json(conversations);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching conversations:", error);
         res.status(500).send("Error fetching conversations");
     }
 });
 
 app.get("/api/messages", async (req, res) => {
     let conversationId = req.headers["authorization"]?.split(" ")[1];
-
-    console.log(conversationId);
 
     if (!conversationId) {
         return res.status(400).send("conversationId is required");
@@ -96,8 +114,38 @@ app.get("/api/messages", async (req, res) => {
     }
 });
 
-app.listen(8081, "0.0.0.0", () => {
-    console.log("Listening on port 8081...");
+io.on("connection", (socket) => {
+    console.log("A user connected");
+
+    socket.on("message", async (messageData) => {
+        const newMessage = new Messages({
+            conversationId: messageData.conversationId,
+            senderId: messageData.senderId,
+            content: messageData.content,
+            timestamp: new Date(),
+            type: messageData.type,
+        });
+
+        try {
+            await newMessage.save();
+
+            io.to(messageData.conversationId).emit("message", messageData);
+
+            await Conversations.findByIdAndUpdate(messageData.conversationId, {
+                lastMessage: {
+                    sender: messageData.senderId,
+                    content: messageData.content,
+                    timestamp: new Date(),
+                },
+            });
+        } catch (error) {
+            console.error("Error saving message:", error);
+        }
+    });
+
+    socket.on("disconnect", () => {
+        console.log("A user disconnected");
+    });
 });
 
 const getName = (conversation, userId) => {
@@ -111,3 +159,7 @@ const getName = (conversation, userId) => {
         return conversation.name;
     }
 };
+
+server.listen(8081, "0.0.0.0", () => {
+    console.log("Listening on port 8081...");
+});

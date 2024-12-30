@@ -30,12 +30,16 @@ function ConversationSet() {
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | null>("");
     const { setConversationId } = useConversation();
 
     useEffect(() => {
         const fetchConversations = async () => {
             try {
-                const userId = "6770843b1c2b37f5314eeb86";
+                // localStorage.setItem("userId", "6770843b1c2b37f5314eeb86");
+                const userId = localStorage.getItem("userId");
+                setUserId(userId);
+
                 const response = await fetch(
                     "http://localhost:8081/api/conversations",
                     {
@@ -62,7 +66,10 @@ function ConversationSet() {
         fetchConversations();
     }, []);
 
-    const getProfilePhoto = (conversation: Conversation, userId: string) => {
+    const getProfilePhoto = (
+        conversation: Conversation,
+        userId: string | null
+    ) => {
         if (conversation.participants.length < 3) {
             if (conversation.participants[0]._id !== userId) {
                 return conversation.participants[0].profilePicture;
@@ -74,7 +81,7 @@ function ConversationSet() {
         }
     };
 
-    const isUser = (conversation: Conversation, userId: string) => {
+    const isUser = (conversation: Conversation, userId: string | null) => {
         if (conversation.lastMessage.sender._id === userId) {
             return "You";
         } else {
@@ -100,21 +107,15 @@ function ConversationSet() {
                         onClick={() => openConversation(conversation)}
                     >
                         <img
-                            src={getProfilePhoto(
-                                conversation,
-                                "6770843b1c2b37f5314eeb86"
-                            )}
+                            src={getProfilePhoto(conversation, userId)}
                             alt=""
                             className="pfpIMG"
                         />
                         <div className="ms-2 me-auto">
                             <div className="fw-bold">{conversation.name}</div>
                             <div>
-                                {isUser(
-                                    conversation,
-                                    "6770843b1c2b37f5314eeb86"
-                                )}
-                                : {conversation.lastMessage.content || ""}
+                                {isUser(conversation, userId)}:{" "}
+                                {conversation.lastMessage.content || ""}
                             </div>
                         </div>
                     </ListGroup.Item>
