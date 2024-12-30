@@ -61,7 +61,6 @@ function ConversationSet() {
     }, []);
 
     const getProfilePhoto = (conversation: Conversation, userId: string) => {
-        console.log(conversation);
         if (conversation.participants.length < 3) {
             if (conversation.participants[0]._id !== userId) {
                 return conversation.participants[0].profilePicture;

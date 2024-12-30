@@ -2,4 +2,85 @@
     flex-grow: 1;
     background-color: lightgray;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#MessageSection {
+    flex-grow: 1;
+    height: 88%;
+    background-color: rgb(184, 184, 184);
+    overflow-y: auto;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+#ChatTextbox {
+    flex-grow: 0;
+    height: 12%;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    background-color: #ffffff;
+}
+
+#MessageBox {
+    width: 88%;
+    height: 70%;
+    margin-right: 8px;
+}
+
+#SendButtonDiv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px;
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    margin-right: 20px;
+    background-color: rgba(0, 207, 0, 1);
+}
+
+#SendButton {
+    height: 20px;
+    margin-left: 3px;
+}
+
+#SendButtonDiv:hover {
+    cursor: pointer;
+}
+
+.ReceivedMessage {
+    display: flex;
+    justify-content: left;
+}
+
+.SentMessage {
+    display: flex;
+    justify-content: right;
+}
+
+.RMessage {
+    text-align: left;
+    background-color: rgb(103, 255, 103);
+    display: inline-block;
+    max-width: 60%;
+    margin-left: 30px;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    word-wrap: break-word;
+}
+
+.SMessage {
+    text-align: right;
+    background-color: rgb(108, 108, 108);
+    display: inline-block;
+    max-width: 60%;
+    margin-right: 30px;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    word-wrap: break-word;
 }
