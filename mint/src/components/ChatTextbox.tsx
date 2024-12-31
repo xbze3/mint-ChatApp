@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../components-css/MessageSet.css";
 import Form from "react-bootstrap/Form";
 import SendButton from "../assets/send.png";
@@ -31,6 +31,38 @@ function ChatTextbox({
     addMessage,
 }: ChatTextboxProps) {
     const [message, setMessage] = useState<string>("");
+    const [username, setUsername] = useState<string>("");
+    const [profilePicture, setProfilePicture] = useState<string>("");
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            try {
+                const response = await fetch(
+                    "http://localhost:8081/api/getInfo",
+                    {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${userId}`,
+                        },
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch user info");
+                }
+
+                const data = await response.json();
+                setUsername(data.username);
+                setProfilePicture(data.profilePicture);
+            } catch (error) {
+                console.error("Error fetching user info:", error);
+            }
+        };
+
+        if (userId) {
+            fetchUserInfo();
+        }
+    }, [userId]);
 
     const handleSendMessage = () => {
         if (!message.trim() || !socket) return;
@@ -40,8 +72,8 @@ function ChatTextbox({
             conversationId,
             senderId: {
                 _id: userId,
-                username: "You",
-                profilePicture: "",
+                username: username,
+                profilePicture: profilePicture,
             },
             content: message,
             timestamp: new Date().toISOString(),
@@ -49,7 +81,6 @@ function ChatTextbox({
         };
 
         socket.emit("message", messageData);
-
         addMessage(messageData);
 
         setMessage("");

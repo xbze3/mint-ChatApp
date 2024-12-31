@@ -71,7 +71,9 @@ function MessageSet() {
         setSocket(newSocket);
 
         newSocket.on("message", (data: Message) => {
-            setMessages((prev) => [...prev, data]);
+            if (data.conversationId == conversationId) {
+                setMessages((prev) => [...prev, data]);
+            }
         });
 
         return () => {

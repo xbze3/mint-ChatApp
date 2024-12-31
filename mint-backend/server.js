@@ -116,9 +116,32 @@ app.get("/api/messages", async (req, res) => {
     }
 });
 
+app.get("/api/getInfo", async (req, res) => {
+    let userId = req.headers["authorization"]?.split(" ")[1];
+
+    if (!userId) {
+        return res.status(400).send("User ID is required");
+    }
+
+    try {
+        const user = await Users.findById(userId, "username profilePicture");
+
+        if (!user) {
+            return res.status(404).send("User not found");
+        }
+
+        res.json({
+            username: user.username,
+            profilePicture: user.profilePicture,
+        });
+    } catch (error) {
+        console.error("Error fetching user info:", error);
+        res.status(500).send("Error fetching user info");
+    }
+});
+
 io.on("connection", (socket) => {
     // console.log("A user connected"); Uncomment to see log message
-
     socket.on("message", async (messageData) => {
         io.emit("updateLastMessage", messageData);
 
@@ -133,7 +156,7 @@ io.on("connection", (socket) => {
         try {
             await newMessage.save();
 
-            io.to(messageData.conversationId).emit("message", messageData);
+            io.emit("message", messageData);
 
             await Conversations.findByIdAndUpdate(messageData.conversationId, {
                 lastMessage: {
