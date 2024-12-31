@@ -97,9 +97,6 @@ function MessageSet() {
                 socket={socket}
                 conversationId={conversationId || ""}
                 userId={localStorage.getItem("userId") || ""}
-                addMessage={(newMessage) =>
-                    setMessages((prev) => [...prev, newMessage])
-                }
             />
         </section>
     );

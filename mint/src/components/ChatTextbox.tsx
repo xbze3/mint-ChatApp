@@ -4,32 +4,13 @@ import Form from "react-bootstrap/Form";
 import SendButton from "../assets/send.png";
 import { Socket } from "socket.io-client";
 
-interface Message {
-    _id: string;
-    conversationId: string;
-    senderId: {
-        _id: string;
-        username: string;
-        profilePicture: string;
-    };
-    content: string;
-    timestamp: string;
-    type: string;
-}
-
 interface ChatTextboxProps {
     socket: Socket | null;
     conversationId: string;
     userId: string;
-    addMessage: (message: Message) => void;
 }
 
-function ChatTextbox({
-    socket,
-    conversationId,
-    userId,
-    addMessage,
-}: ChatTextboxProps) {
+function ChatTextbox({ socket, conversationId, userId }: ChatTextboxProps) {
     const [message, setMessage] = useState<string>("");
     const [username, setUsername] = useState<string>("");
     const [profilePicture, setProfilePicture] = useState<string>("");
@@ -81,7 +62,6 @@ function ChatTextbox({
         };
 
         socket.emit("message", messageData);
-        addMessage(messageData);
 
         setMessage("");
     };
