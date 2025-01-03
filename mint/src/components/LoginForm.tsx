@@ -27,10 +27,8 @@ function LoginForm() {
 
             if (response.ok) {
                 const data = await response.json();
-
                 localStorage.setItem("token", data.token);
-                console.log(data.userId, data.token);
-                forward(data.userId);
+                window.location.replace("http://localhost:5173/home");
             } else {
                 const errorData = await response.json();
                 setError(errorData.message || "Login failed");
@@ -40,17 +38,13 @@ function LoginForm() {
         }
     };
 
-    function forward(userId: string) {
-        window.location.href = "http://localhost:5173/";
-    }
-
     return (
-        <div id="body">
+        <div id="login_body">
             <div>
                 <img src={logo} alt="" id="loginLogo" />
             </div>
-            <div className="container">
-                <div className="header">
+            <div className="login_container">
+                <div className="login_header">
                     <div className="text">Login</div>
                     <div className="underline"></div>
                 </div>

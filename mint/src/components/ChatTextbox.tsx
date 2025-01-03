@@ -3,27 +3,43 @@ import "../components-css/MessageSet.css";
 import Form from "react-bootstrap/Form";
 import SendButton from "../assets/send.png";
 import { Socket } from "socket.io-client";
+import { jwtDecode } from "jwt-decode";
 
 interface ChatTextboxProps {
     socket: Socket | null;
     conversationId: string;
-    userId: string;
 }
 
-function ChatTextbox({ socket, conversationId, userId }: ChatTextboxProps) {
+function ChatTextbox({ socket, conversationId }: ChatTextboxProps) {
     const [message, setMessage] = useState<string>("");
     const [username, setUsername] = useState<string>("");
     const [profilePicture, setProfilePicture] = useState<string>("");
 
+    const decodeToken = (token: string | null) => {
+        if (!token) return null;
+        try {
+            const decoded: any = jwtDecode(token);
+            return decoded.id || null;
+        } catch (error) {
+            console.error("Failed to decode token:", error);
+            return null;
+        }
+    };
+
+    const token = localStorage.getItem("token");
+    const userId = decodeToken(token);
+
     useEffect(() => {
         const fetchUserInfo = async () => {
+            if (!userId) return;
+
             try {
                 const response = await fetch(
                     "http://localhost:8081/api/getInfo",
                     {
                         method: "GET",
                         headers: {
-                            Authorization: `Bearer ${userId}`,
+                            Authorization: `Bearer ${token} ${userId}`,
                         },
                     }
                 );
@@ -40,9 +56,7 @@ function ChatTextbox({ socket, conversationId, userId }: ChatTextboxProps) {
             }
         };
 
-        if (userId) {
-            fetchUserInfo();
-        }
+        fetchUserInfo();
     }, [userId]);
 
     const handleSendMessage = () => {
@@ -62,7 +76,6 @@ function ChatTextbox({ socket, conversationId, userId }: ChatTextboxProps) {
         };
 
         socket.emit("message", messageData);
-
         setMessage("");
     };
 

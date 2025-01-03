@@ -4,6 +4,7 @@ import groupIMG from "../assets/groupImage.png";
 import ListGroup from "react-bootstrap/ListGroup";
 import { useConversation } from "./special/ConversationContext";
 import { io } from "socket.io-client";
+import { jwtDecode } from "jwt-decode";
 
 interface User {
     _id: string;
@@ -44,21 +45,31 @@ function ConversationSet() {
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [userId, setUserId] = useState<string | null>("");
     const { setConversationId } = useConversation();
+
+    const extractUserIdFromToken = (token: string | null) => {
+        if (!token) return null;
+        try {
+            const decoded: any = jwtDecode(token);
+            return decoded.id || null;
+        } catch (error) {
+            console.error("Failed to decode token:", error);
+            return null;
+        }
+    };
+
+    const token = localStorage.getItem("token");
+    const userId = extractUserIdFromToken(token);
 
     useEffect(() => {
         const fetchConversations = async () => {
             try {
-                const userId = localStorage.getItem("userId");
-                setUserId(userId);
-
                 const response = await fetch(
                     "http://localhost:8081/api/conversations",
                     {
                         method: "GET",
                         headers: {
-                            Authorization: `Bearer ${userId}`,
+                            Authorization: `Bearer ${token} ${userId}`,
                             "Content-Type": "application/json",
                         },
                     }
@@ -76,8 +87,13 @@ function ConversationSet() {
             }
         };
 
-        fetchConversations();
-    }, []);
+        if (userId) {
+            fetchConversations();
+        } else {
+            setError("User not authenticated");
+            setLoading(false);
+        }
+    }, [userId, token]);
 
     useEffect(() => {
         const newSocket = io("http://localhost:8081");

@@ -82,8 +82,8 @@ app.use(
     })
 );
 
-app.get("/api/conversations", async (req, res) => {
-    let userId = req.headers["authorization"]?.split(" ")[1];
+app.get("/api/conversations", authenticateToken, async (req, res) => {
+    let userId = req.headers["authorization"]?.split(" ")[2];
 
     if (!userId) {
         return res.status(400).send("User ID is required");
@@ -107,8 +107,8 @@ app.get("/api/conversations", async (req, res) => {
     }
 });
 
-app.get("/api/messages", async (req, res) => {
-    let conversationId = req.headers["authorization"]?.split(" ")[1];
+app.get("/api/messages", authenticateToken, async (req, res) => {
+    let conversationId = req.headers["authorization"]?.split(" ")[2];
 
     if (!conversationId) {
         return res.status(400).send("conversationId is required");
@@ -126,8 +126,8 @@ app.get("/api/messages", async (req, res) => {
     }
 });
 
-app.get("/api/getInfo", async (req, res) => {
-    let userId = req.headers["authorization"]?.split(" ")[1];
+app.get("/api/getInfo", authenticateToken, async (req, res) => {
+    let userId = req.headers["authorization"]?.split(" ")[2];
 
     if (!userId) {
         return res.status(400).send("User ID is required");
@@ -180,7 +180,6 @@ app.post("/api/login", async (req, res) => {
             userId: user._id,
         });
     } catch (error) {
-        console.error("Error during login:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 });

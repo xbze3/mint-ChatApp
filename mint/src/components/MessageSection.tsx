@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import "../components-css/MessageSet.css";
+import { jwtDecode } from "jwt-decode";
 
 interface Message {
     _id: string;
@@ -19,7 +20,20 @@ interface MessageSectionProps {
 }
 
 function MessageSection({ messages }: MessageSectionProps) {
-    const userId = localStorage.getItem("userId");
+    const decodeToken = (token: string | null) => {
+        if (!token) return null;
+        try {
+            const decoded: any = jwtDecode(token);
+            return decoded.id || null;
+        } catch (error) {
+            console.error("Failed to decode token:", error);
+            return null;
+        }
+    };
+
+    // Get token from localStorage and decode it
+    const token = localStorage.getItem("token");
+    const userId = decodeToken(token);
 
     const messageSectionRef = useRef<HTMLDivElement | null>(null);
 

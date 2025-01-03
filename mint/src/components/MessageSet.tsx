@@ -26,6 +26,8 @@ function MessageSet() {
     const { conversationId } = useConversation();
     const [socket, setSocket] = useState<Socket | null>(null);
 
+    const token = localStorage.getItem("token");
+
     useEffect(() => {
         const fetchMessages = async () => {
             if (!conversationId) {
@@ -40,7 +42,7 @@ function MessageSet() {
                     {
                         method: "GET",
                         headers: {
-                            Authorization: `Bearer ${conversationId}`,
+                            Authorization: `Bearer ${token} ${conversationId}`,
                             "Content-Type": "application/json",
                         },
                     }
@@ -96,7 +98,6 @@ function MessageSet() {
             <ChatTextbox
                 socket={socket}
                 conversationId={conversationId || ""}
-                userId={localStorage.getItem("userId") || ""}
             />
         </section>
     );
