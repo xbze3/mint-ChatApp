@@ -152,6 +152,8 @@ function ConversationSet() {
 
     if (loading) return <div>Loading conversations...</div>;
     if (error) return <div>Error: {error}</div>;
+    if (conversations.length === 0)
+        return <div className="ConversationSetFallback">No conversations</div>;
 
     return (
         <section id="ConversationSet">

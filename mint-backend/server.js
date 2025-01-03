@@ -36,11 +36,10 @@ const conversationSchema = new mongoose.Schema({
 
 const usersSchema = new mongoose.Schema(
     {
-        _id: { type: mongoose.Schema.Types.ObjectId },
-        username: String,
-        email: String,
+        email: { type: String, unique: true },
+        username: { type: String, unique: true },
         profilePicture: String,
-        createdAt: Date,
+        createdAt: { type: Date, default: Date.now },
         password: String,
     },
     { collection: "users" }
@@ -180,6 +179,53 @@ app.post("/api/login", async (req, res) => {
             userId: user._id,
         });
     } catch (error) {
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+app.post("/api/signup", async (req, res) => {
+    const { username, email, password } = req.body;
+
+    try {
+        const existingUser = await Users.findOne({
+            $or: [{ email }, { username }],
+        });
+
+        if (existingUser) {
+            return res
+                .status(400)
+                .json({ message: "Email or username already in use" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = new Users({
+            username,
+            email,
+            password: hashedPassword,
+        });
+
+        await newUser.save();
+
+        const token = jwt.sign(
+            {
+                id: newUser._id,
+                email: newUser.email,
+                username: newUser.username,
+            },
+            SECRET_KEY,
+            { expiresIn: "1h" }
+        );
+
+        console.log(token);
+
+        res.status(201).json({
+            message: "Sign Up successful",
+            token,
+            userId: newUser._id,
+        });
+    } catch (error) {
+        console.error("Error during signup:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 });
