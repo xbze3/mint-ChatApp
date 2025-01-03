@@ -23,7 +23,7 @@ const conversationSchema = new mongoose.Schema({
     participants: [{ type: String, ref: "Users" }],
     lastMessage: {
         sender: { type: mongoose.Schema.Types.ObjectId, ref: "Users" },
-        content: { type: String, required: true },
+        content: { type: String },
         timestamp: { type: Date, required: true },
     },
     lastRead: {
@@ -186,8 +186,6 @@ app.get("/api/getInfo", authenticateToken, async (req, res) => {
 
 app.get("/search-users", async (req, res) => {
     const { query } = req.query;
-
-    console.log("Hit");
 
     if (!query || query.trim() === "") {
         return res.status(400).json({ error: "Search query is required" });

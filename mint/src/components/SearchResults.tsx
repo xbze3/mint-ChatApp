@@ -44,9 +44,6 @@ function SearchResults({ users }: UsersProps) {
             if (!response.ok) {
                 throw new Error("Failed to start conversation");
             }
-
-            const data = await response.json();
-            console.log("Conversation started:", data);
         } catch (error) {
             console.error("Error starting conversation:", error);
         }
@@ -60,6 +57,7 @@ function SearchResults({ users }: UsersProps) {
                         as="li"
                         className="d-flex justify-content-between align-items-start searchItem"
                         key={user._id}
+                        onClick={() => startConversation(user._id)}
                     >
                         <div className="ms-2 me-auto searchResultItem">
                             <div className="fw-bold">
@@ -67,7 +65,6 @@ function SearchResults({ users }: UsersProps) {
                                     src={user.profilePicture}
                                     alt=""
                                     className="searchResultsPFP"
-                                    onClick={() => startConversation(user._id)}
                                 />
                             </div>
                             <div className="userProfile">{user.username}</div>

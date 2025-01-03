@@ -140,11 +140,14 @@ function ConversationSet() {
 
     const isUser = (
         conversation: Conversation,
-        userId: string | null
+        userId: string | null,
+        content: string
     ): string => {
         const sender = conversation.lastMessage?.sender;
-        if (sender) {
-            return sender._id === userId ? "You" : sender.username || "";
+        if (content) {
+            return sender._id === userId
+                ? "You: "
+                : sender.username + ": " || "";
         }
         return "";
     };
@@ -182,7 +185,11 @@ function ConversationSet() {
                         <div className="ms-2 me-auto">
                             <div className="fw-bold">{conversation.name}</div>
                             <div>
-                                {isUser(conversation, userId)}:{" "}
+                                {isUser(
+                                    conversation,
+                                    userId,
+                                    conversation.lastMessage.content
+                                )}
                                 {conversation.lastMessage.content || ""}
                             </div>
                         </div>
