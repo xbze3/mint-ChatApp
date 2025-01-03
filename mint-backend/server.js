@@ -149,6 +149,27 @@ app.get("/api/getInfo", authenticateToken, async (req, res) => {
     }
 });
 
+app.get("/search-users", async (req, res) => {
+    const { query } = req.query;
+
+    console.log("Hit");
+
+    if (!query || query.trim() === "") {
+        return res.status(400).json({ error: "Search query is required" });
+    }
+
+    try {
+        const foundUsers = await Users.find({
+            username: new RegExp(query, "i"),
+        }).select("_id username profilePicture");
+
+        res.json(foundUsers);
+    } catch (err) {
+        console.error("Error searching users:", err);
+        res.status(500).send("Server error");
+    }
+});
+
 app.post("/api/login", async (req, res) => {
     const { email_username, password } = req.body;
 

@@ -1,0 +1,31 @@
+#startConversationButton {
+    height: 35px;
+}
+
+#startConversationButton:hover {
+    cursor: pointer;
+}
+
+#userList {
+    position: absolute;
+    background-color: rgb(227, 227, 227);
+    display: flex;
+    width: 60%;
+    margin-left: 10px;
+    height: 80%;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: 15px;
+}
+
+#userListContent {
+    width: 97%;
+    height: 95%;
+    border-radius: 15px;
+}
+
+#seachResults {
+    margin-top: 10px;
+}

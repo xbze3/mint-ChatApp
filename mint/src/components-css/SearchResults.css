@@ -1,0 +1,22 @@
+.search-results-container {
+    overflow-y: auto;
+    margin-top: 15px;
+}
+
+.searchResultsPFP {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.searchResultItem {
+    display: flex;
+    align-items: center;
+    padding: 5px 0px 10px 5px;
+    font-size: 18px;
+}
+
+.searchItem:hover {
+    background-color: rgb(244, 244, 244);
+}

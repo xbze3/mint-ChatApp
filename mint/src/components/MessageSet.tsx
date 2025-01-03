@@ -4,7 +4,7 @@ import MessageSection from "./MessageSection";
 import ChatTextbox from "./ChatTextbox";
 import { useConversation } from "./special/ConversationContext";
 import { io, Socket } from "socket.io-client";
-import Logo from "../assets/mintLogo.png";
+import Logo from "../assets/mintLogo1.svg";
 
 interface Message {
     _id: string;
