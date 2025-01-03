@@ -150,8 +150,14 @@ function ConversationSet() {
         setConversationId(conversation._id);
     };
 
-    if (loading) return <div>Loading conversations...</div>;
-    if (error) return <div>Error: {error}</div>;
+    if (loading)
+        return (
+            <div className="ConversationSetFallback">
+                Loading conversations...
+            </div>
+        );
+    if (error)
+        return <div className="ConversationSetFallback">Error: {error}</div>;
     if (conversations.length === 0)
         return <div className="ConversationSetFallback">No conversations</div>;
 
