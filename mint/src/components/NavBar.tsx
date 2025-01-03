@@ -69,7 +69,7 @@ function NavBar() {
                 </Container>
             </Navbar>
 
-            {showResults && ( // Only show when `showResults` is true
+            {showResults && (
                 <div id="userList">
                     <div id="userListContent">
                         <div id="textBoxDiv">
