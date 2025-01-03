@@ -106,6 +106,41 @@ app.get("/api/conversations", authenticateToken, async (req, res) => {
     }
 });
 
+app.post("/api/start-conversation", authenticateToken, async (req, res) => {
+    const { userId, targetUserId } = req.body;
+
+    if (!userId || !targetUserId) {
+        return res.status(400).json({ message: "User IDs are required" });
+    }
+
+    try {
+        const existingConversation = await Conversations.findOne({
+            participants: { $all: [userId, targetUserId] },
+        });
+
+        if (existingConversation) {
+            return res.status(200).json(existingConversation);
+        }
+
+        const newConversation = new Conversations({
+            isGroup: false,
+            participants: [userId, targetUserId],
+            lastMessage: {
+                sender: targetUserId,
+                content: "",
+                timestamp: new Date(),
+            },
+        });
+
+        const savedConversation = await newConversation.save();
+
+        res.status(201).json(savedConversation);
+    } catch (error) {
+        console.error("Error starting conversation:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
 app.get("/api/messages", authenticateToken, async (req, res) => {
     let conversationId = req.headers["authorization"]?.split(" ")[2];
 

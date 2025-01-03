@@ -1,5 +1,6 @@
 import ListGroup from "react-bootstrap/ListGroup";
 import "../components-css/SearchResults.css";
+import { jwtDecode } from "jwt-decode";
 
 interface Users {
     _id: string;
@@ -12,6 +13,45 @@ interface UsersProps {
 }
 
 function SearchResults({ users }: UsersProps) {
+    const extractUserIdFromToken = (token: string | null) => {
+        if (!token) return null;
+        try {
+            const decoded: any = jwtDecode(token);
+            return decoded.id || null;
+        } catch (error) {
+            console.error("Failed to decode token:", error);
+            return null;
+        }
+    };
+
+    const token = localStorage.getItem("token");
+    const userId = extractUserIdFromToken(token);
+
+    const startConversation = async (targetUserId: string) => {
+        try {
+            const response = await fetch(
+                "http://localhost:8081/api/start-conversation",
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ userId, targetUserId }),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to start conversation");
+            }
+
+            const data = await response.json();
+            console.log("Conversation started:", data);
+        } catch (error) {
+            console.error("Error starting conversation:", error);
+        }
+    };
+
     return (
         <div className="search-results-container">
             <ListGroup as="ul">
@@ -27,6 +67,7 @@ function SearchResults({ users }: UsersProps) {
                                     src={user.profilePicture}
                                     alt=""
                                     className="searchResultsPFP"
+                                    onClick={() => startConversation(user._id)}
                                 />
                             </div>
                             <div className="userProfile">{user.username}</div>

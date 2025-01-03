@@ -138,12 +138,15 @@ function ConversationSet() {
         }
     };
 
-    const isUser = (conversation: Conversation, userId: string | null) => {
-        if (conversation.lastMessage.sender._id === userId) {
-            return "You";
-        } else {
-            return conversation.lastMessage.sender.username;
+    const isUser = (
+        conversation: Conversation,
+        userId: string | null
+    ): string => {
+        const sender = conversation.lastMessage?.sender;
+        if (sender) {
+            return sender._id === userId ? "You" : sender.username || "";
         }
+        return "";
     };
 
     const openConversation = (conversation: Conversation) => {
