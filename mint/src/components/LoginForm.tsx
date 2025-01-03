@@ -17,7 +17,7 @@ function LoginForm() {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const response = await fetch("http://localhost:8081/login", {
+            const response = await fetch("http://localhost:8081/api/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -29,7 +29,8 @@ function LoginForm() {
                 const data = await response.json();
 
                 localStorage.setItem("token", data.token);
-                forward(data.role);
+                console.log(data.userId, data.token);
+                forward(data.userId);
             } else {
                 const errorData = await response.json();
                 setError(errorData.message || "Login failed");
@@ -39,12 +40,8 @@ function LoginForm() {
         }
     };
 
-    function forward(role: string) {
-        if (role === "Admin") {
-            window.location.href = "http://localhost:5173/admin/";
-        } else if (role === "Doctor" || role === "Nurse") {
-            window.location.href = "http://localhost:5173/med/";
-        }
+    function forward(userId: string) {
+        window.location.href = "http://localhost:5173/";
     }
 
     return (

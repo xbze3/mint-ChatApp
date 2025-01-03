@@ -4,6 +4,14 @@ const cors = require("cors");
 const http = require("http");
 const socketIo = require("socket.io");
 const app = express();
+const jwt = require("jsonwebtoken");
+const authenticateToken = require("./utils/authMiddleware");
+const dotenv = require("dotenv");
+const bcrypt = require("bcrypt");
+
+dotenv.config();
+
+const SECRET_KEY = process.env.SECRET_KEY;
 
 mongoose.connect("mongodb://localhost:27017/mint-db");
 // Uncomment the code below to see db connection output
@@ -28,10 +36,12 @@ const conversationSchema = new mongoose.Schema({
 
 const usersSchema = new mongoose.Schema(
     {
+        _id: { type: mongoose.Schema.Types.ObjectId },
         username: String,
         email: String,
         profilePicture: String,
         createdAt: Date,
+        password: String,
     },
     { collection: "users" }
 );
@@ -137,6 +147,41 @@ app.get("/api/getInfo", async (req, res) => {
     } catch (error) {
         console.error("Error fetching user info:", error);
         res.status(500).send("Error fetching user info");
+    }
+});
+
+app.post("/api/login", async (req, res) => {
+    const { email_username, password } = req.body;
+
+    try {
+        const user = await Users.findOne({
+            $or: [{ email: email_username }, { username: email_username }],
+        });
+
+        if (!user) {
+            return res.status(401).json({ message: "User not found" });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return res.status(401).json({ message: "Invalid password" });
+        }
+
+        const token = jwt.sign(
+            { id: user._id, email: user.email, username: user.username },
+            SECRET_KEY,
+            { expiresIn: "1h" }
+        );
+
+        res.status(200).json({
+            message: "Login successful",
+            token,
+            userId: user._id,
+        });
+    } catch (error) {
+        console.error("Error during login:", error);
+        res.status(500).json({ message: "Internal server error" });
     }
 });
 
