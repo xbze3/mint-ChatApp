@@ -314,7 +314,7 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("send-message", (data) => {
+    socket.on("send-message", () => {
         io.emit("message-received", updatedConversation);
     });
 
