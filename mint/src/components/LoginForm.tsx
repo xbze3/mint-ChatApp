@@ -38,6 +38,10 @@ function LoginForm() {
         }
     };
 
+    function forwardSignUp() {
+        window.location.replace("http://localhost:5173/signup");
+    }
+
     return (
         <div id="login_body">
             <div>
@@ -77,6 +81,13 @@ function LoginForm() {
                         <button type="submit" className="submit">
                             Login
                         </button>
+                    </div>
+                    <div id="login-CreateAccount">
+                        <p>Don't have an account?</p>{" "}
+                        <p id="login-SignUp" onClick={forwardSignUp}>
+                            Sign-Up
+                        </p>{" "}
+                        <p>instead</p>
                     </div>
                 </form>
             </div>

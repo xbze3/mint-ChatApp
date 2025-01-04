@@ -122,3 +122,29 @@
     margin-right: 100px;
     width: 400px;
 }
+
+#login-CreateAccount > p {
+    display: inline;
+}
+
+#login-SignUp {
+    color: rgb(76, 226, 76);
+    text-decoration: underline;
+}
+
+#login-SignUp:hover {
+    cursor: pointer;
+}
+
+#signup-LoginAccount > p {
+    display: inline;
+}
+
+#signup-Login {
+    color: rgb(76, 226, 76);
+    text-decoration: underline;
+}
+
+#signup-Login:hover {
+    cursor: pointer;
+}
