@@ -1,6 +1,7 @@
 import ListGroup from "react-bootstrap/ListGroup";
 import "../components-css/SearchResults.css";
 import { jwtDecode } from "jwt-decode";
+import { io } from "socket.io-client";
 
 interface Users {
     _id: string;
@@ -44,6 +45,9 @@ function SearchResults({ users }: UsersProps) {
             if (!response.ok) {
                 throw new Error("Failed to start conversation");
             }
+
+            const newSocket = io("http://localhost:8081");
+            newSocket.emit("startConversation");
         } catch (error) {
             console.error("Error starting conversation:", error);
         }

@@ -7,6 +7,7 @@ import "../components-css/NavBar.css";
 import { useState, useEffect } from "react";
 import StartConversationButton from "../assets/StartConversationButton.svg";
 import SearchResults from "./SearchResults";
+import { io } from "socket.io-client";
 
 function NavBar() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -46,6 +47,14 @@ function NavBar() {
     const toggleSearchResults = () => {
         setShowResults((prev) => !prev);
     };
+
+    useEffect(() => {
+        const newSocket = io("http://localhost:8081");
+
+        newSocket.on("startConversation", () => {
+            setShowResults(false);
+        });
+    }, []);
 
     return (
         <>

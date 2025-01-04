@@ -61,32 +61,32 @@ function ConversationSet() {
     const token = localStorage.getItem("token");
     const userId = extractUserIdFromToken(token);
 
-    useEffect(() => {
-        const fetchConversations = async () => {
-            try {
-                const response = await fetch(
-                    "http://localhost:8081/api/conversations",
-                    {
-                        method: "GET",
-                        headers: {
-                            Authorization: `Bearer ${token} ${userId}`,
-                            "Content-Type": "application/json",
-                        },
-                    }
-                );
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
+    const fetchConversations = async () => {
+        try {
+            const response = await fetch(
+                "http://localhost:8081/api/conversations",
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${token} ${userId}`,
+                        "Content-Type": "application/json",
+                    },
                 }
-                const data: Conversation[] = await response.json();
-                setConversations(data);
-            } catch (error: any) {
-                setError(error.message);
-                console.error("Error fetching conversations:", error);
-            } finally {
-                setLoading(false);
+            );
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
             }
-        };
+            const data: Conversation[] = await response.json();
+            setConversations(data);
+        } catch (error: any) {
+            setError(error.message);
+            console.error("Error fetching conversations:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         if (userId) {
             fetchConversations();
         } else {
@@ -97,6 +97,10 @@ function ConversationSet() {
 
     useEffect(() => {
         const newSocket = io("http://localhost:8081");
+
+        newSocket.on("startConversation", () => {
+            fetchConversations();
+        });
 
         newSocket.on("updateLastMessage", (data: Message) => {
             setConversations((prevConversations) =>

@@ -318,6 +318,10 @@ io.on("connection", (socket) => {
         io.emit("message-received", updatedConversation);
     });
 
+    socket.on("startConversation", () => {
+        io.emit("startConversation");
+    });
+
     socket.on("disconnect", () => {
         // console.log("A user disconnected"); Uncomment to see log message
     });
