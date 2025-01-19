@@ -11,11 +11,8 @@ This project is a real-time messaging application built using React, TypeScript,
 ## Features
 
 -   Real-time Messaging: Powered by Socket.IO for real-time updates.
-
 -   Conversations View: Displays a list of user conversations with the last message.
-
 -   Dynamic Message Loading: Automatically loads messages when a conversation is selected.
-
 -   User Context Management: Utilizes React Context for state management (conversation ID, last message).
 
 ## Technologies Used
@@ -41,13 +38,9 @@ This project is a real-time messaging application built using React, TypeScript,
 ## Future Improvements
 
 -   Enhanced Authentication: Integrate a proper authentication mechanism.
-
 -   Pagination: Add pagination for loading large numbers of messages and conversations.
-
 -   Responsive Design: Improve the layout for mobile and tablet devices.
-
 -   Read Receipts: Add functionality to display read receipts.
-
 -   Typing Indicators: Show when another user is typing in real time.
 
 ## Contributions
