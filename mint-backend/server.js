@@ -13,7 +13,7 @@ dotenv.config();
 
 const SECRET_KEY = process.env.SECRET_KEY;
 
-mongoose.connect("mongodb://localhost:27017/mint-db");
+mongoose.connect("mongodb://db:27017/mint-db");
 // Uncomment the code below to see db connection output
 // .then(() => console.log("Connected to MongoDB"))
 // .catch((error) => console.error("Error connecting to MongoDB:", error));

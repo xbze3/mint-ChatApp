@@ -1,0 +1,48 @@
+services:
+    frontend:
+        build:
+            context: ./mint
+            dockerfile: Dockerfile
+        ports:
+            - "5173:5173"
+        volumes:
+            - ./mint:/app
+            - /app/node_modules
+        depends_on:
+            - backend
+
+    backend:
+        build:
+            context: ./mint-backend
+            dockerfile: Dockerfile
+        ports:
+            - "8081:8081"
+
+        environment:
+            - MONGO_URI=mongodb://db:27017/mint-db
+
+        volumes:
+            - ./mint-backend:/app
+            - /app/node_modules
+        depends_on:
+            db:
+                condition: service_healthy
+
+    db:
+        image: mongo:latest
+        container_name: mongo_db
+        ports:
+            - "27017:27017"
+        volumes:
+            - db:/data/db
+            - ./db/:/docker-entrypoint-initdb.d
+            - ./db/mongod.conf:/etc/mongod.conf # Mount the custom config file
+        command: ["--config", "/etc/mongod.conf"]
+        healthcheck:
+            test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+volumes:
+    db:
