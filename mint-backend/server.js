@@ -212,13 +212,17 @@ app.post("/api/login", async (req, res) => {
         });
 
         if (!user) {
-            return res.status(401).json({ message: "User not found" });
+            return res
+                .status(401)
+                .json({ message: "Invalid Username or Password" });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return res.status(401).json({ message: "Invalid password" });
+            return res
+                .status(401)
+                .json({ message: "Invalid Username or Password" });
         }
 
         const token = jwt.sign(
