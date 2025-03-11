@@ -1,4 +1,4 @@
-# Messaging Application
+# Mint - Messaging Application
 
 ## Project Overview
 
