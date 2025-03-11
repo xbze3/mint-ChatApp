@@ -284,8 +284,14 @@ app.post("/api/signup", async (req, res) => {
     }
 });
 
+const connectedUsers = {};
+
 io.on("connection", (socket) => {
-    // console.log("A user connected"); Uncomment to see log message
+    socket.on("register", (userId) => {
+        connectedUsers[userId] = socket.id;
+        // console.log(`User ${userId} registered with socket ID: ${socket.id}`);
+    });
+
     socket.on("message", async (messageData) => {
         io.emit("updateLastMessage", messageData);
 
@@ -318,8 +324,13 @@ io.on("connection", (socket) => {
         io.emit("message-received", updatedConversation);
     });
 
-    socket.on("startConversation", () => {
-        io.emit("startConversation");
+    socket.on("startConversation", (targetUserId) => {
+        const targetSocketId = connectedUsers[targetUserId];
+        if (targetSocketId) {
+            io.to(targetSocketId).emit("startConversation");
+        } else {
+            // console.log(`User ${targetUserId} not connected.`);
+        }
     });
 
     socket.on("disconnect", () => {

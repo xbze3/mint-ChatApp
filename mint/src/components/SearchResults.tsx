@@ -1,7 +1,5 @@
 import ListGroup from "react-bootstrap/ListGroup";
 import "../components-css/SearchResults.css";
-import { jwtDecode } from "jwt-decode";
-import { io } from "socket.io-client";
 
 interface Users {
     _id: string;
@@ -11,23 +9,12 @@ interface Users {
 
 interface UsersProps {
     users: Users[];
+    userId: string | null;
+    token: string | null;
+    socket: any;
 }
 
-function SearchResults({ users }: UsersProps) {
-    const extractUserIdFromToken = (token: string | null) => {
-        if (!token) return null;
-        try {
-            const decoded: any = jwtDecode(token);
-            return decoded.id || null;
-        } catch (error) {
-            console.error("Failed to decode token:", error);
-            return null;
-        }
-    };
-
-    const token = localStorage.getItem("token");
-    const userId = extractUserIdFromToken(token);
-
+function SearchResults({ users, userId, token, socket }: UsersProps) {
     const startConversation = async (targetUserId: string) => {
         try {
             const response = await fetch(
@@ -46,8 +33,8 @@ function SearchResults({ users }: UsersProps) {
                 throw new Error("Failed to start conversation");
             }
 
-            const newSocket = io("http://localhost:8081");
-            newSocket.emit("startConversation");
+            socket.emit("startConversation", userId);
+            console.log(userId);
         } catch (error) {
             console.error("Error starting conversation:", error);
         }

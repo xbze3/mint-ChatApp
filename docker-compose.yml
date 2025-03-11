@@ -36,7 +36,7 @@ services:
         volumes:
             - db:/data/db
             - ./db/:/docker-entrypoint-initdb.d
-            - ./db/mongod.conf:/etc/mongod.conf # Mount the custom config file
+            - ./db/mongod.conf:/etc/mongod.conf
         command: ["--config", "/etc/mongod.conf"]
         healthcheck:
             test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]

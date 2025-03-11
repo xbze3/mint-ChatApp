@@ -7,12 +7,28 @@ import "../components-css/NavBar.css";
 import { useState, useEffect } from "react";
 import StartConversationButton from "../assets/StartConversationButton.svg";
 import SearchResults from "./SearchResults";
-import { io } from "socket.io-client";
+import { jwtDecode } from "jwt-decode";
+import { io, Socket } from "socket.io-client";
 
 function NavBar() {
+    const extractUserIdFromToken = (token: string | null) => {
+        if (!token) return null;
+        try {
+            const decoded: any = jwtDecode(token);
+            return decoded.id || null;
+        } catch (error) {
+            console.error("Failed to decode token:", error);
+            return null;
+        }
+    };
+
     const [searchQuery, setSearchQuery] = useState("");
     const [users, setUsers] = useState([]);
     const [showResults, setShowResults] = useState(false);
+    const [socket, setSocket] = useState<Socket | null>(null);
+
+    const token = localStorage.getItem("token");
+    const userId = extractUserIdFromToken(token);
 
     useEffect(() => {
         if (searchQuery.trim() === "") {
@@ -50,11 +66,22 @@ function NavBar() {
 
     useEffect(() => {
         const newSocket = io("http://localhost:8081");
+        setSocket(newSocket);
+
+        if (userId) {
+            newSocket.emit("register", userId);
+        }
 
         newSocket.on("startConversation", () => {
             setShowResults(false);
         });
-    }, []);
+
+        return () => {
+            newSocket.disconnect();
+        };
+    }, [userId]);
+
+    console.log(userId);
 
     return (
         <>
@@ -102,7 +129,12 @@ function NavBar() {
                             </Form>
                         </div>
                         <div id="searchResults">
-                            <SearchResults users={users} />
+                            <SearchResults
+                                users={users}
+                                userId={userId}
+                                token={token}
+                                socket={socket}
+                            />
                         </div>
                     </div>
                 </div>
